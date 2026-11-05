@@ -1,0 +1,29 @@
+{
+  "events": [
+    {
+      "tStartMs": 480,
+      "dDurationMs": 2400,
+      "segs": [{ "utf8": "Hello " }, { "utf8": "there." }]
+    },
+    {
+      "tStartMs": 3000,
+      "dDurationMs": 800,
+      "segs": [{ "utf8": "\n" }]
+    },
+    {
+      "tStartMs": 3100,
+      "dDurationMs": 2600,
+      "segs": [{ "utf8": "General Kenobi." }]
+    },
+    {
+      "tStartMs": 5800,
+      "dDurMs": 1800,
+      "segs": [{ "utf8": "General Kenobi." }]
+    },
+    {
+      "tStartMs": 8000,
+      "dDurationMs": 0,
+      "segs": [{ "utf8": "  A surprise.  " }]
+    }
+  ]
+}

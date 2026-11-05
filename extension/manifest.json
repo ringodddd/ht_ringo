@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "幕译",
+  "version": "0.1.0",
+  "description": "在 YouTube 播放器上叠加双语字幕，翻译走你自己的 API。",
+  "permissions": ["storage"],
+  "host_permissions": ["https://www.youtube.com/*"],
+  "optional_host_permissions": ["https://*/*", "http://*/*"],
+  "background": {
+    "service_worker": "src/sw.js"
+  },
+  "action": {
+    "default_title": "幕译",
+    "default_popup": "src/popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["src/parse.js", "src/content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["src/injected.js", "src/overlay.css"],
+      "matches": ["https://www.youtube.com/*"]
+    }
+  ]
+}

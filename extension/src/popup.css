@@ -1,0 +1,36 @@
+body {
+  margin: 0;
+  width: 340px;
+  padding: 14px;
+  background: #171410;
+  color: #f3ecdf;
+  font: 13px/1.45 "Segoe UI", "PingFang SC", sans-serif;
+}
+header { margin-bottom: 10px; }
+header strong { display: block; font-size: 16px; letter-spacing: 0.04em; }
+header span { color: #b3a898; }
+label { display: grid; gap: 4px; margin-top: 8px; color: #b3a898; }
+input, select, textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(243, 236, 223, 0.16);
+  background: #100e0c;
+  color: #f3ecdf;
+  border-radius: 8px;
+  padding: 8px;
+}
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.check { display: flex; align-items: center; gap: 8px; color: #f3ecdf; }
+.check input { width: auto; }
+button {
+  width: 100%;
+  margin-top: 12px;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px;
+  background: #e7c27a;
+  color: #24180a;
+  font-weight: 700;
+  cursor: pointer;
+}
+#status { min-height: 1.2em; color: #d5f3e4; }
