@@ -1,95 +1,62 @@
 # 幕译
 
-自己搭的 YouTube 沉浸式双语字幕。视频仍用油管播放器，只把字幕文本交给你自己的 OpenAI 兼容接口翻译。
+iPhone 上的 Safari 插件。用 Safari 打开 YouTube，双语字幕写进视频自己的字幕轨，横过来全屏也还在。翻译走你自己的 OpenAI 兼容接口，密钥只留在这台手机里。
 
-两套界面，翻译协议是一样的：
+油管 App 里的播放器插件进不去。请留在 Safari。
 
-- **浏览器扩展**：在 `youtube.com` 的播放器底部叠原文和译文。字幕从你当前这场浏览里拿，不经过机房 IP，所以不容易被 YouTube 的「确认你不是机器人」拦住。
-- **本地网页**：贴链接，或导入 SRT / VTT。适合想要文稿、跳句、下载字幕的时候。服务器用 yt-dlp 读字幕，不下载视频。
+字幕样式跟系统走，两行字：上面原文，下面译文。字号和底色在 iPhone 上改：
 
-## 本地网页
+设置 → 辅助功能 → 字幕与隐藏式字幕
 
-```bash
-cd backend
-pip install -r requirements.txt
-cd ../frontend
-npm install
-```
+## 装到 iPhone
 
-开两个终端：
+需要一台 Mac、Xcode，以及 iPhone。用日常的 Apple ID 就能装，免费账号大约 7 天后要重新装一次。
+
+在 Mac 上，仓库根目录执行：
 
 ```bash
-# 终端 1
-cd backend
-MUYI_MOCK_TRANSLATE=0 uvicorn app.main:app --reload --port 8787
-
-# 终端 2
-cd frontend
-npm run dev
+xcrun safari-web-extension-converter extension \
+  --project-location safari-ios \
+  --app-name "幕译" \
+  --bundle-identifier com.ringo.muyi \
+  --swift \
+  --ios-only \
+  --copy-resources \
+  --no-open \
+  --no-prompt \
+  --force
+open safari-ios/*.xcodeproj
 ```
 
-打开 http://127.0.0.1:5173 。
+在 Xcode 里：
 
-复制 `.env.example` 为 `.env`，填上你的接口：
+1. 选中 App 和扩展两个 target，Signing 里选你的 Team。Bundle ID 如果被占用，改成你自己的。
+2. 把 iPhone 连上并信任这台电脑，选中这台手机，按 Run。
+3. 手机上如果问「未受信任的开发者」，到 设置 → 通用 → VPN 与设备管理 里信任你的 Apple ID。
 
-```bash
-LLM_BASE_URL=https://api.deepseek.com/v1
-LLM_API_KEY=你的密钥
-LLM_MODEL=deepseek-chat
-```
+装完之后打开扩展：
 
-网页设置里勾着「使用服务器环境变量里的密钥」时，浏览器不会保存 Key。取消勾选后，可以临时改用另一把 Key，请求仍然先打到本机服务再转发出去。
+1. 设置 → Safari → 扩展 → 幕译，打开开关。
+2. 网站权限里允许 YouTube，以及其他网站（模型接口的域名不固定，选允许全部网站）。
+3. 用 Safari 打开 `youtube.com`。如果弹出「在 YouTube 中打开」，点取消，留在 Safari。
+4. 点地址栏的扩展图标，填 API Base URL、API Key、模型，保存。
+5. 打开一个有字幕的视频。画面底部会先出原文，译完一批就换成两行。按钮可以在「双语 / 译文 / 原文」之间换。
 
-`MUYI_MOCK_TRANSLATE=1` 时不调用模型，译文只是在原文前加上「【译】」，用来看界面。
-
-Docker：
-
-```bash
-cp .env.example .env
-docker compose up --build
-```
-
-然后打开 http://127.0.0.1:8787 。
-
-## 浏览器扩展
-
-1. 打开 `chrome://extensions`（Edge 用 `edge://extensions`）。
-2. 打开开发者模式，选择「加载未打包的扩展程序」，选仓库里的 `extension` 目录。
-3. 点扩展图标，填写 Base URL、API Key、模型，保存。浏览器会问你是否允许扩展访问这个接口。
-4. 打开一个有字幕的 YouTube 视频。播放器左上角会出现「双语」，底部是原文小字、译文大字。
-
-扩展把密钥存在 `chrome.storage.local`，直接请求你的接口，不经过幕译服务器。换源语言或模型后会重新取字幕或重新翻译。已经译过的句子按视频和模型缓存在本地。
-
-## 字幕拉不到的时候
-
-YouTube 经常拦截机房 IP。网页这条链路会按下面的顺序试：
-
-1. yt-dlp。可以在设置里上传 Netscape 格式的 `cookies.txt`（用浏览器扩展导出，文件里要有 `youtube.com`），或设置环境变量 `YT_COOKIES`。
-2. 可选的 Invidious 实例：`INVIDIOUS_INSTANCES=https://yewtu.be`。
-3. 失败的话，导入 SRT / VTT，或改用浏览器扩展。
-
-cookies 写在 `data/youtube-cookies.txt`，权限是 `600`。这是登录态，不要提交，也不要把服务暴露到公网。
-
-如果一定要给别人用，设置 `APP_TOKEN`。除了 `/api/health` 和 `/api/config`，请求都要带 `Authorization: Bearer <口令>`。网页设置里有「访问口令」。
+改了 `extension/` 里的代码之后，重新跑上面的 converter 命令，再在 Xcode 里 Run 一次。
 
 ## 接口
 
-| 方法 | 路径 | 作用 |
-| --- | --- | --- |
-| GET | `/api/config` | 服务器有没有配密钥、是不是预览翻译 |
-| POST | `/api/captions` | `{ "url", "lang" }`，返回带时间轴的字幕 |
-| POST | `/api/import` | `{ "url", "filename", "content" }`，解析 SRT / VTT / json3 |
-| POST | `/api/translate` | 按句翻译，`text/event-stream` 往回推 |
-| POST | `/api/cookies` | 保存 YouTube cookies |
-| POST | `/api/export` | 导出 SRT |
+Base URL 写到 `/v1`，例如 `https://api.deepseek.com/v1`。幕译请求 `{base}/chat/completions`。DeepSeek、硅基流动、自己的中转都可以。
 
-翻译接口认 OpenAI 的 `POST {base}/chat/completions`。Base 可以写到 `/v1`，也可以直接写完整的 `/chat/completions`。每批大约 24 句，同一句原文、同一个模型、同一种目标语言会缓存在 `data/translations.sqlite3`。
+这一期需要 iOS 16 或更新的系统。
 
-## 开发
+## 开发检查
+
+这台环境没有 Safari，也没有 Xcode，不能在这里装到真机上。扩展里的字幕解析可以在本机跑：
 
 ```bash
-cd backend && python -m pytest
 node extension/test/parse.test.js
 node extension/test/llm.test.js
-cd frontend && npm run build
 ```
+
+仓库里还有一套本地网页播放器（`frontend/` 和 `backend/`），用来在电脑上试字幕时间轴。iPhone 上的使用路径是上面的 Safari 扩展。

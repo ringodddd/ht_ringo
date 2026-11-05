@@ -1,11 +1,22 @@
 {
   "manifest_version": 3,
   "name": "幕译",
-  "version": "0.1.0",
-  "description": "在 YouTube 播放器上叠加双语字幕，翻译走你自己的 API。",
+  "version": "0.2.0",
+  "description": "在 iPhone 的 Safari 里给 YouTube 视频加上双语字幕，翻译走你自己的 API。",
   "permissions": ["storage"],
-  "host_permissions": ["https://www.youtube.com/*"],
-  "optional_host_permissions": ["https://*/*", "http://*/*"],
+  "host_permissions": [
+    "https://www.youtube.com/*",
+    "https://m.youtube.com/*",
+    "https://youtube.com/*",
+    "https://*.youtube.com/*",
+    "https://*/*",
+    "http://*/*"
+  ],
+  "browser_specific_settings": {
+    "safari": {
+      "strict_min_version": "16.0"
+    }
+  },
   "background": {
     "service_worker": "src/sw.js"
   },
@@ -25,15 +36,23 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.youtube.com/*"],
-      "js": ["src/parse.js", "src/content.js"],
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://m.youtube.com/*",
+        "https://youtube.com/*"
+      ],
+      "js": ["src/parse.js", "src/llm.js", "src/content.js"],
       "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["src/injected.js", "src/overlay.css"],
-      "matches": ["https://www.youtube.com/*"]
+      "resources": ["src/injected.js"],
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://m.youtube.com/*",
+        "https://youtube.com/*"
+      ]
     }
   ]
 }

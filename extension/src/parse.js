@@ -151,6 +151,16 @@
     return ranked.length ? ranked[0][2] : null;
   }
 
+  function formatCueLine(cue, settings) {
+    const original = cue.text || "";
+    const translation = (cue.translation || "").trim();
+    const mode = settings && settings.displayMode ? settings.displayMode : "bilingual";
+    const translationBelow = !settings || settings.translationBelow !== false;
+    if (mode === "original" || !translation) return original;
+    if (mode === "translation") return translation;
+    return translationBelow ? `${original}\n${translation}` : `${translation}\n${original}`;
+  }
+
   function activeCueIndex(cues, time) {
     let lo = 0;
     let hi = cues.length - 1;
@@ -175,5 +185,6 @@
     chooseTrack,
     languageRank,
     activeCueIndex,
+    formatCueLine,
   };
 })(typeof globalThis !== "undefined" ? globalThis : this);

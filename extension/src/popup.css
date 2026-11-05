@@ -1,36 +1,40 @@
 body {
   margin: 0;
-  width: 340px;
-  padding: 14px;
+  width: 100%;
+  min-width: 280px;
+  max-width: 420px;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
   background: #171410;
   color: #f3ecdf;
-  font: 13px/1.45 "Segoe UI", "PingFang SC", sans-serif;
+  font: 16px/1.45 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
 }
-header { margin-bottom: 10px; }
-header strong { display: block; font-size: 16px; letter-spacing: 0.04em; }
-header span { color: #b3a898; }
-label { display: grid; gap: 4px; margin-top: 8px; color: #b3a898; }
+header { margin-bottom: 12px; }
+header strong { display: block; font-size: 20px; letter-spacing: 0.04em; }
+header span, .note { color: #b3a898; }
+label { display: grid; gap: 6px; margin-top: 12px; color: #b3a898; }
 input, select, textarea {
   width: 100%;
   box-sizing: border-box;
   border: 1px solid rgba(243, 236, 223, 0.16);
   background: #100e0c;
   color: #f3ecdf;
-  border-radius: 8px;
-  padding: 8px;
+  border-radius: 12px;
+  padding: 12px;
+  font: inherit;
 }
-.row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .check { display: flex; align-items: center; gap: 8px; color: #f3ecdf; }
-.check input { width: auto; }
+.check input { width: 22px; height: 22px; }
 button {
   width: 100%;
-  margin-top: 12px;
+  margin-top: 14px;
   border: 0;
   border-radius: 999px;
-  padding: 10px;
+  min-height: 48px;
   background: #e7c27a;
   color: #24180a;
+  font: inherit;
   font-weight: 700;
-  cursor: pointer;
 }
-#status { min-height: 1.2em; color: #d5f3e4; }
+#status { min-height: 1.3em; color: #d5f3e4; }
+.note { font-size: 13px; line-height: 1.5; }

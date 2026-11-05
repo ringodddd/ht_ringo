@@ -6,7 +6,7 @@ const context = { console, globalThis: {} };
 context.globalThis = context;
 vm.createContext(context);
 vm.runInContext(fs.readFileSync(path.join(__dirname, "../src/parse.js"), "utf8"), context);
-const { parseJson3, parseVtt, parseSrt, chooseTrack, activeCueIndex } = context.MuyiParse;
+const { parseJson3, parseVtt, parseSrt, chooseTrack, activeCueIndex, formatCueLine } = context.MuyiParse;
 
 const fixtures = path.join(__dirname, "../../backend/tests/fixtures");
 const json3 = parseJson3(fs.readFileSync(path.join(fixtures, "sample.json3"), "utf8"));
@@ -31,6 +31,14 @@ assert(chooseTrack(tracks, "en").auto === true);
 assert(chooseTrack(tracks, "ja") === null);
 assert(activeCueIndex(srt, 1.2) === 0);
 assert(activeCueIndex(srt, 0) === -1);
+
+const line = formatCueLine(
+  { text: "Hello", translation: "你好" },
+  { displayMode: "bilingual", translationBelow: true },
+);
+assert(line === "Hello\n你好", line);
+assert(formatCueLine({ text: "Hello", translation: "" }, { displayMode: "bilingual" }) === "Hello");
+assert(formatCueLine({ text: "Hello", translation: "你好" }, { displayMode: "translation" }) === "你好");
 
 function assert(condition, detail) {
   if (!condition) {

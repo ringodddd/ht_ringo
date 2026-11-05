@@ -9,7 +9,6 @@ function readForm() {
     sourceLang: document.querySelector("#sourceLang").value,
     displayMode: document.querySelector("#displayMode").value,
     translationBelow: document.querySelector("#translationBelow").checked,
-    fontScale: Number(document.querySelector("#fontScale").value),
     extraPrompt: document.querySelector("#extraPrompt").value,
   };
 }
@@ -19,15 +18,11 @@ function fill(settings) {
     if (settings[id] != null) document.querySelector(`#${id}`).value = settings[id];
   }
   document.querySelector("#translationBelow").checked = settings.translationBelow !== false;
-  document.querySelector("#fontScale").value = String(settings.fontScale || 1);
-  document.querySelector("#scaleOut").textContent = Number(settings.fontScale || 1).toFixed(1);
 }
 
-document.querySelector("#fontScale").addEventListener("input", (event) => {
-  document.querySelector("#scaleOut").textContent = Number(event.target.value).toFixed(1);
+chrome.storage.local.get("muyi-settings").then((stored) => {
+  fill(stored["muyi-settings"] || { translationBelow: true, displayMode: "bilingual", targetLang: "zh-Hans", sourceLang: "auto" });
 });
-
-chrome.storage.local.get("muyi-settings").then((stored) => fill(stored["muyi-settings"] || { translationBelow: true, fontScale: 1 }));
 
 document.querySelector("#save").addEventListener("click", async () => {
   const status = document.querySelector("#status");
@@ -36,18 +31,12 @@ document.querySelector("#save").addEventListener("click", async () => {
     status.textContent = "Base URL、API Key 和模型都要填。";
     return;
   }
-  let origin = "";
   try {
-    origin = new URL(settings.apiBase).origin;
+    new URL(settings.apiBase);
   } catch {
     status.textContent = "Base URL 不是合法地址。";
     return;
   }
-  const granted = await chrome.permissions.request({ origins: [`${origin}/*`] });
-  if (!granted) {
-    status.textContent = "没有允许访问这个接口，翻译请求发不出去。";
-    return;
-  }
   await chrome.storage.local.set({ "muyi-settings": settings });
-  status.textContent = "已保存。打开一个有字幕的视频就会开始翻译。";
+  status.textContent = "已保存。用 Safari 打开一个有字幕的视频就会开始翻译。";
 });
