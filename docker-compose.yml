@@ -1,0 +1,13 @@
+services:
+  muyi:
+    build: .
+    ports:
+      - "8787:8787"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATA_DIR: /data
+      STATIC_DIR: /app/static
+    volumes:
+      - ./data:/data
